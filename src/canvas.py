@@ -10,17 +10,27 @@ class DocumentCanvas(tk.Canvas):
 
     def __init__(self, root, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
-        
-        self.base_image_pil = None  # Base image to draw upon 
-
+        self.root = root
         self.config(bg='white')
         self.pack()
-        
+ 
+        self.base_image_pil = None  # Base image to draw upon 
+        self.image_pil = None  # Current image without non validated selection
+
+       
         # Stores last positions clicked
-        self.postion_buffer = []
+        self.position_buffer = []
+        # Stores all selections validated
+        self.selection_l = []
+        # Stores last selection that pends validation
+        self.selection_to_validate = None
+
+        self.bind('<Enter>', lambda e: self.focus_set())
         self.bind('<Button-1>', self._button_1_f)
         self.bind('<ButtonRelease-1>', self._button_1_release_f)
         self.bind('<Motion>', self._motion_f)
+
+        self.bind('s', self._validate_selection_f)
 
     def get_size(self):
         """Dynamic size of the widget
@@ -71,9 +81,10 @@ class DocumentCanvas(tk.Canvas):
                 resample=pilimg.BILINEAR,  # Adequate for text upsampling according to https://graphicdesign.stackexchange.com/questions/26385/difference-between-none-linear-cubic-and-sinclanczos3-interpolation-in-image
                 )
         self.base_image_pil = image
+        self.image_pil = image
         self.draw_image(image)
 
-    def draw_rect(self, p1, p2):
+    def draw_rectangle(self, p1, p2):
         """Draws a rectangle at p1, p2
 
         :p1: TODO
@@ -93,7 +104,7 @@ class DocumentCanvas(tk.Canvas):
                 outline=(125, 0, 0, 255),
                 )
 
-        image = pilimg.alpha_composite(self.base_image_pil, overlay)
+        image = pilimg.alpha_composite(self.image_pil, overlay)
         image.convert('RGBA')
         
         self.draw_image(image)
@@ -107,7 +118,7 @@ class DocumentCanvas(tk.Canvas):
         :returns: TODO
 
         """
-        self.postion_buffer = [(event.x, event.y)]
+        self.position_buffer = [(event.x, event.y)]
 
     def _button_1_release_f(self, event):
         """TODO: Docstring for _button_1_release_f.
@@ -116,11 +127,12 @@ class DocumentCanvas(tk.Canvas):
         :returns: TODO
 
         """
-        if len(self.postion_buffer) > 0:
-            self.postion_buffer.append((event.x, event.y))
-            print(self.postion_buffer)
-            self.draw_rect(*self.postion_buffer)
-        self.postion_buffer = []  # reset
+        if len(self.position_buffer) > 0:
+            self.position_buffer.append((event.x, event.y))
+            print(self.position_buffer)
+            self.draw_rectangle(*self.position_buffer)
+            self.selection_to_validate = (*self.position_buffer,)
+        self.position_buffer = []  # reset
 
     def _motion_f(self, event):
         """Mouse motion event callback
@@ -129,8 +141,23 @@ class DocumentCanvas(tk.Canvas):
         :returns: TODO
 
         """
-        if len(self.postion_buffer) > 0:
-            self.draw_rect(self.postion_buffer[0], (event.x, event.y))
+        if len(self.position_buffer) > 0:
+            self.draw_rectangle(self.position_buffer[0], (event.x, event.y))
+    
+    def _validate_selection_f(self, event):
+        """Validate last selection
+
+        :event: TODO
+        :returns: TODO
+
+        """
+        if self.selection_to_validate is None:
+            return
+        self.selection_l.append(self.selection_to_validate)
+        self.selection_to_validate = None
+        
+        # Modify stored image
+        self.image_pil = self._image_pil
 
 if __name__ == "__main__":
     root = tk.Tk()

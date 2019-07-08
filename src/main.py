@@ -1,9 +1,12 @@
+from pathlib import Path
+
 import PIL.Image as pilimg
 import PIL.ImageTk as pilimgtk
 import tkinter as tk
 import numpy as np
 
-import canvas
+from src import canvas
+from src.model import document
 
 class Window(tk.Tk):
 
@@ -50,7 +53,8 @@ class Window(tk.Tk):
 
 def main():
     app = Window("")
-    app.doc_canvas.load_image("img/sample_0.png")
+    doc = document.Document(Path("img/sample_0.png"))
+    app.doc_canvas.load_document(doc)
     tk.mainloop()
 
 

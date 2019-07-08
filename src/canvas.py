@@ -1,9 +1,9 @@
 import tkinter as tk 
 import PIL.Image as pilimg
 import PIL.ImageDraw as pildraw
-import PIL.ImageTk as pilimgtk
+import PIL.ImageTk as piltk
 
-from src.model import document
+from src.model import document, rectangle
 
 class DocumentCanvas(tk.Canvas):
 
@@ -15,8 +15,6 @@ class DocumentCanvas(tk.Canvas):
         self.config(bg='white')
         self.pack()
  
-        self.base_image_pil = None  # Base image to draw upon #! Erase
-        self.image_pil = None  # Current image without non validated selection #! Erase
         self._document: document.Document = None  # Current working document
        
         # Stores last positions clicked
@@ -69,30 +67,17 @@ class DocumentCanvas(tk.Canvas):
         self._document = doc
         self.draw_document()
 
-    def draw_rectangle(self, p1, p2):
-        """Draws a rectangle at p1, p2
+    def draw_rectangle(self, rect: rectangle.Rectangle):
+        """Draws a rectangle
 
-        :p1: TODO
-        :p2: TODO
+        :rect: 
         :returns: TODO
 
         """
-        if self.base_image_pil is None:
+        if self._document is None:
             return
-        overlay =  pilimg.new('RGBA', 
-                self.base_image_pil.size,
-                (0, 0, 0, 0),
-                )
-        draw_overlay = pildraw.Draw(overlay)
-        draw_overlay.rectangle((p1, p2), 
-                fill=(125, 0, 0, 127),
-                outline=(125, 0, 0, 255),
-                )
-
-        image = pilimg.alpha_composite(self.image_pil, overlay)
-        image.convert('RGBA')
-        
-        self.draw_document(image)
+        self._document.draw_rectangle(rect)
+        self.draw_document()
 
         pass
 
@@ -117,7 +102,8 @@ class DocumentCanvas(tk.Canvas):
             print(self.position_buffer)
             if self.position_buffer[0][0] != self.position_buffer[1][0] \
                     and self.position_buffer[0][1] != self.position_buffer[1][1]:
-                self.draw_rectangle(*self.position_buffer)
+                self.draw_rectangle(rectangle.Rectangle(*self.position_buffer[0], 
+                                                        *self.position_buffer[1]))
                 self.selection_to_validate = (*self.position_buffer,)
         self.position_buffer = []  # reset
 
@@ -129,7 +115,8 @@ class DocumentCanvas(tk.Canvas):
 
         """
         if len(self.position_buffer) > 0:
-            self.draw_rectangle(self.position_buffer[0], (event.x, event.y))
+            self.draw_rectangle(rectangle.Rectangle(*self.position_buffer[0], 
+                                                    *(event.x, event.y)))
     
     def _validate_selection_f(self, event):
         """Validate last selection

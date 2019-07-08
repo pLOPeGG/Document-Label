@@ -11,7 +11,7 @@ mail:   douzont@gmail.com
 from typing import Tuple
 
 class Rectangle:
-    def __init__(self, boundaries):
+    def __init__(self, *boundaries):
         super().__init__()
         
         self._boundaries = boundaries

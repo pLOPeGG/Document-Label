@@ -33,16 +33,17 @@ class Document:
     def _update(self, new_image: pilimg.Image):
         self._current_image = new_image
         self._tk_image = piltk.PhotoImage(image=self._current_image)
-        
+    
+    @property
+    def size(self):
+        return self._working_image.size
+    
     def resize(self, 
                size: Tuple[int, int],
                *args,
                **kwargs):
         self._working_image = self._working_image.resize(size, *args, **kwargs)
         self._update(self._working_image)
-    
-    def size(self):
-        return self._current_image.size
     
     def draw_rectangle(self, rect: rectangle.Rectangle):
         """Draws a rectangle
@@ -52,7 +53,7 @@ class Document:
 
         """
         overlay =  pilimg.new('RGBA', 
-                              self.size(),
+                              self.size,
                               (0, 0, 0, 0),
                               )
         draw_overlay = pildraw.Draw(overlay)
@@ -60,9 +61,11 @@ class Document:
                                fill=(125, 0, 0, 127),
                                outline=(125, 0, 0, 255),
                                )
-
-        image = pilimg.alpha_composite(self._working_image, overlay).convert('RGBA')
+        image = pilimg.alpha_composite(self._working_image, overlay)
         self._update(image)
+        
+    def save_modifications(self):
+        self._working_image = self._current_image
 
 
 def main():

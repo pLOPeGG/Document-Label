@@ -1,3 +1,13 @@
+#!/usr/bin/env python3
+
+"""
+File:   main.py
+Author: Thibault Douzon
+Date:   2019-07-09
+        20:29:55
+mail:   douzont@gmail.com
+"""
+
 from pathlib import Path
 
 import PIL.Image as pilimg
@@ -5,7 +15,7 @@ import PIL.ImageTk as pilimgtk
 import tkinter as tk
 import numpy as np
 
-from src import canvas
+from src.view import canvas, menu
 from src.model import document
 
 class Window(tk.Tk):
@@ -30,6 +40,8 @@ class Window(tk.Tk):
         """
         self.main_frame = tk.Frame(self)
         self.main_frame.pack(side=tk.TOP)
+        
+        self.menu = menu.Menu(self)
        
         # TOP Frame for navigation / buttons
         self.top_frame = tk.Frame(self.main_frame)

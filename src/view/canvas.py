@@ -1,3 +1,13 @@
+#!/usr/bin/env python3
+
+"""
+File:   canvas.py
+Author: Thibault Douzon
+Date:   2019-07-09
+        20:30:05
+mail:   douzont@gmail.com
+"""
+
 import tkinter as tk 
 import PIL.Image as pilimg
 import PIL.ImageDraw as pildraw
@@ -102,9 +112,10 @@ class DocumentCanvas(tk.Canvas):
             print(self.position_buffer)
             if self.position_buffer[0][0] != self.position_buffer[1][0] \
                     and self.position_buffer[0][1] != self.position_buffer[1][1]:
-                self.draw_rectangle(rectangle.Rectangle(*self.position_buffer[0], 
-                                                        *self.position_buffer[1]))
+                self._document.draw_rectangle(rectangle.Rectangle(*self.position_buffer[0], 
+                                                                  *self.position_buffer[1]))
                 self.selection_to_validate = (*self.position_buffer,)
+                self.draw_document()
         self.position_buffer = []  # reset
 
     def _motion_f(self, event):
@@ -115,8 +126,9 @@ class DocumentCanvas(tk.Canvas):
 
         """
         if len(self.position_buffer) > 0:
-            self.draw_rectangle(rectangle.Rectangle(*self.position_buffer[0], 
-                                                    *(event.x, event.y)))
+            self._document.draw_rectangle(rectangle.Rectangle(*self.position_buffer[0], 
+                                                              *(event.x, event.y)))
+            self.draw_document()
     
     def _validate_selection_f(self, event):
         """Validate last selection
@@ -131,7 +143,7 @@ class DocumentCanvas(tk.Canvas):
         self.selection_to_validate = None
         
         # Modify stored image
-        self.image_pil = self._image_pil
+        self._document.save_modifications()
 
 if __name__ == "__main__":
     root = tk.Tk()

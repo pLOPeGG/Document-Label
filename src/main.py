@@ -15,23 +15,24 @@ import PIL.ImageTk as pilimgtk
 import tkinter as tk
 import numpy as np
 
+from src.my_util import Singleton
 from src.view import canvas, menu
 from src.model import document
+from src.controller import control
 
-class Window(tk.Tk):
+class Window(tk.Tk, metaclass=Singleton):
 
     """Main window starting application"""
 
-    def __init__(self, doc_pa):
+    def __init__(self):
         """
 
         :doc_pa: TODO
 
         """
         super().__init__()
-
-        self._doc_pa = doc_pa
         
+        self._controller: control.Controller = control.Controller(self) 
         self._build()
 
     def _build(self):
@@ -64,7 +65,7 @@ class Window(tk.Tk):
 
 
 def main():
-    app = Window("")
+    app = Window()
     doc = document.Document(Path("img/sample_0.png"))
     app.doc_canvas.load_document(doc)
     tk.mainloop()

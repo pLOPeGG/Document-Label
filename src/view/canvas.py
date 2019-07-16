@@ -39,8 +39,8 @@ class DocumentCanvas(tk.Canvas):
         self.bind('<ButtonRelease-1>', self._button_1_release_f)
         self.bind('<Motion>', self._motion_f)
 
-        self.bind('s', self._validate_selection_f)
-
+        self.bind('<space>', self._validate_selection_f)
+    
     def get_size(self):
         """Dynamic size of the widget
 

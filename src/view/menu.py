@@ -25,4 +25,5 @@ class Menu(tk.Menu):
         self.add_cascade(label='label', menu=self.sub_menu)
         self.sub_menu.add_command(label='add label', command=controller.add_label)
         self.sub_menu.add_command(label='remove label', command=lambda: print('coucou2'))
+        self.sub_menu.add_command(label='show label list', command=controller.show_label)
         

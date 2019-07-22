@@ -1,0 +1,3 @@
+*.pyc
+src/__pycache__/canvas.cpython-36.pyc
+src/test.py

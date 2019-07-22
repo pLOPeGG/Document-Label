@@ -16,19 +16,21 @@ import PIL.ImageDraw as pildraw
 import PIL.ImageTk as piltk
 
 from src.model import label, picture, rectangle
+from src.controller import control
 
 
 class Document:
     def __init__(self, image_path: Path):
         super().__init__()
         self._image_path = image_path
-        self._working_image: pilimg.Image = None
+        self._base_image: picture.Picture = picture.Picture(image_path)
+        self._working_image: pilimg.Image = self._base_image._array
         self._current_image: pilimg.Image = None
         self._tk_image: piltk.PhotoImage = None
 
-        self._base_image = picture.Picture(image_path)
-        self._working_image = self._base_image._array
         self._update(self._working_image)
+        
+        self._last_box: Tuple[rectangle.Rectangle, label.Label] = None
         
     def _update(self, new_image: pilimg.Image):
         self._current_image = new_image
@@ -52,20 +54,26 @@ class Document:
         :returns: TODO
 
         """
+        selected_label = control.Controller()._selected_label
+        
+        self._last_box = (rect, selected_label)
+        
         overlay =  pilimg.new('RGBA', 
                               self.size,
                               (0, 0, 0, 0),
                               )
         draw_overlay = pildraw.Draw(overlay)
-        draw_overlay.rectangle(rect.to_points(), 
-                               fill=(125, 0, 0, 127),
-                               outline=(125, 0, 0, 255),
+        draw_overlay.rectangle(rect.points, 
+                               fill=(*selected_label.color, 127),
+                               outline=(*selected_label.color, 255),
                                )
         image = pilimg.alpha_composite(self._working_image, overlay)
         self._update(image)
         
     def save_modifications(self):
         self._working_image = self._current_image
+        
+        control.Controller().push_box(self._last_box)
 
 
 def main():

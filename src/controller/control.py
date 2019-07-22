@@ -7,12 +7,25 @@ Date:   2019-07-09
         20:31:35
 mail:   douzont@gmail.com
 """
+from collections import deque
+from typing import Tuple
 import tkinter as tk
 from tkinter import colorchooser
 
 from src.my_util import Singleton
-from src.model import label
+from src.model import label, rectangle
 from src import main
+
+DEFAULT_SHORTCUT_D = {
+    ('BackSpace', 8): None,
+    ('Tab', 9): None,
+    ('Return', 13): None,
+    ('Left', 37): None,
+    ('Up', 38): None,
+    ('Right', 39): None,
+    ('Down', 40): None
+}
+
 
 class Controller(metaclass=Singleton):
     def __init__(self, window=None):
@@ -20,13 +33,24 @@ class Controller(metaclass=Singleton):
         
         self._window: main.Window = window
         
-        self._label_d = {}
+        self._box_q = deque()
+        
+        self._label_d = {label.default_label_none._key: label.default_label_none}
+        self._selected_label: label.Label = label.default_label_none
+        
+        self.shortcut_d = DEFAULT_SHORTCUT_D
+    
+    def push_box(self, new_box: Tuple[rectangle.Rectangle, label.Label]):
+        self._box_q.append(new_box)
     
     def show_label(self):
         for n, l in self._label_d.items():
             print(f"{n} : {l}")
     
     def add_label(self):
+        """
+        :returns: 
+        """
         label_info = {}
         
         window_popup = tk.Toplevel()
@@ -49,9 +73,6 @@ class Controller(metaclass=Singleton):
         shortcut_label = tk.Label(shortcut_frame, text='Label shortcut : ')
         shortcut_label.pack(side=tk.LEFT)
         
-        
-        
-        # TODO: validate input so new label isn't one of the previous
         def get_key():
             window_key = tk.Toplevel()
             window_key.wm_title('Select key')
@@ -63,12 +84,16 @@ class Controller(metaclass=Singleton):
             key_label.pack()
             
             def key_helper(e: tk.Event):
-                key_text_var.set(e.keysym)
-                shortcut_button.config(text=e.keysym)
-                label_info['key'] = (e.keysym, e.keycode)
-                
-                window_key.destroy()
-                window_popup.grab_set()
+                if (e.keysym, e.keycode) not in self._label_d \
+                and (e.keysym, e.keycode) not in self.shortcut_d:
+                    key_text_var.set(e.keysym)
+                    shortcut_button.config(text=e.keysym)
+                    label_info['key'] = (e.keysym, e.keycode)
+                    
+                    window_key.destroy()
+                    window_popup.grab_set()
+                else:
+                    key_text_var.set(f"Key «{e.keysym}» is not available")
                 
             window_key.bind('<Key>', func=key_helper)
         
@@ -97,9 +122,18 @@ class Controller(metaclass=Singleton):
             label_ = label.Label(label_name, label_key, label_color)
             
             if not label_name in self._label_d:
-                self._label_d[label_name] = label_
+                self._label_d[label_key] = label_
             window_popup.destroy()
             
         tk.Button(window_popup, text='Done', command=create_label).pack()
         
         window_popup.grab_set()
+        
+    def select_label(self, label_key: Tuple[str, int]):
+        """Change current selected label to another
+        :param label_key: tuple keysym and keycode of a label
+        """
+        if label_key in self._label_d:
+            self._selected_label = self._label_d[label_key]
+        else:
+            pass

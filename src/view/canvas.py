@@ -125,7 +125,7 @@ class DocumentCanvas(tk.Canvas):
                 self.selection_to_validate = (*self.position_buffer,)
                 self.draw_document()
                 print(self.selection_to_validate)
-        self.position_buffer = []  # reset
+            self.position_buffer = []  # reset
 
     def _motion_f(self, event: tk.Event):
         """Mouse motion event callback

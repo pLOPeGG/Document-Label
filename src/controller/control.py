@@ -29,9 +29,10 @@ class Controller(metaclass=Singleton):
         self._selected_label: label.Label = label.default_label_none
         
         self._shortcut_d = {
-            ('BackSpace', 8): None,
+            ('BackSpace', 8): self._undo,
             ('Tab', 9): None,
-            ('Return', 13): self._undo,
+            ('Return', 13): None,
+            ('Escape', 27): self._clear_volatile_box,
             ('Left', 37): None,
             ('Up', 38): None,
             ('Right', 39): None,
@@ -152,3 +153,6 @@ class Controller(metaclass=Singleton):
             print(f"Removed {deleted_box}, remains {self._box_q}")
         else:
             pass
+
+    def _clear_volatile_box(self, doc: document.Document):
+        doc.clear_volatile_box()

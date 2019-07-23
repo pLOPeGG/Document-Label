@@ -85,6 +85,9 @@ class Document:
 
     def save_modifications(self):
         self._working_image = self._current_image
+        
+    def clear_volatile_box(self):
+        self._update(self._working_image)
 
 
 def main():

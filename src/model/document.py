@@ -8,7 +8,7 @@ Date:   2019-07-08
 mail:   douzont@gmail.com
 """
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Deque
 
 import numpy as np
 import PIL.Image as pilimg
@@ -16,7 +16,6 @@ import PIL.ImageDraw as pildraw
 import PIL.ImageTk as piltk
 
 from src.model import label, picture, rectangle
-from src.controller import control
 
 
 class Document:
@@ -33,8 +32,14 @@ class Document:
         self._last_box: Tuple[rectangle.Rectangle, label.Label] = None
         
     def _update(self, new_image: pilimg.Image):
+        # self._working_image = new_image
         self._current_image = new_image
         self._tk_image = piltk.PhotoImage(image=self._current_image)
+    
+    def _reset(self):
+        self._working_image = self._base_image._base_array
+        self._last_box = None
+        self._update(self._working_image)
     
     @property
     def size(self):
@@ -44,36 +49,42 @@ class Document:
                size: Tuple[int, int],
                *args,
                **kwargs):
-        self._working_image = self._working_image.resize(size, *args, **kwargs)
+        self._working_image = self._base_image.resize(size, *args, **kwargs)
         self._update(self._working_image)
     
-    def draw_rectangle(self, rect: rectangle.Rectangle):
+    def draw_rectangle(self, 
+                       rect: rectangle.Rectangle, 
+                       labl: label.Label = label.default_label_none):
         """Draws a rectangle
 
         :rect: 
         :returns: TODO
 
-        """
-        selected_label = control.Controller()._selected_label
+        """        
+        self._last_box = (rect, labl)
         
-        self._last_box = (rect, selected_label)
-        
-        overlay =  pilimg.new('RGBA', 
-                              self.size,
-                              (0, 0, 0, 0),
-                              )
+        overlay = pilimg.new('RGBA', 
+                             self.size,
+                             (0, 0, 0, 0),
+                             )
         draw_overlay = pildraw.Draw(overlay)
         draw_overlay.rectangle(rect.points, 
-                               fill=(*selected_label.color, 127),
-                               outline=(*selected_label.color, 255),
+                               fill=(*labl.color, 127),
+                               outline=(*labl.color, 255),
                                )
         image = pilimg.alpha_composite(self._working_image, overlay)
         self._update(image)
-        
+
+    def draw_from_start(self, queue: Deque[Tuple[rectangle.Rectangle,
+                                                 label.Label]]):
+        self._reset()
+
+        for rect, labl in queue:
+            self.draw_rectangle(rect, labl)
+            self.save_modifications()
+
     def save_modifications(self):
         self._working_image = self._current_image
-        
-        control.Controller().push_box(self._last_box)
 
 
 def main():

@@ -9,6 +9,7 @@ mail:   douzont@gmail.com
 """
 from pathlib import Path
 from typing import Tuple
+from copy import deepcopy
 
 import numpy as np
 import PIL.Image as pilimg
@@ -20,6 +21,7 @@ class Picture:
         
         self._image_path: Path = image_path
         self._array: pilimg.Image = self._open()
+        self._base_array = deepcopy(self._array)
         
     def _open(self):
         return pilimg.open(str(self._image_path), 'r').convert("RGBA")
@@ -33,4 +35,8 @@ class Picture:
         self._array = self._array.resize(size=size,
                                          *args,
                                          **kwargs)
+        
+        self._base_array = self._base_array.resize(size=size,
+                                                   *args,
+                                                   **kwargs)
         return self._array

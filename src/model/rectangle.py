@@ -10,6 +10,7 @@ mail:   douzont@gmail.com
 
 from typing import Tuple
 
+
 class Rectangle:
     def __init__(self, *boundaries):
         super().__init__()
@@ -18,6 +19,12 @@ class Rectangle:
     
     @property
     def points(self) -> Tuple[Tuple[int, int], 
-                                 Tuple[int, int]]:
+                              Tuple[int, int]]:
         return ((self._boundaries[0], self._boundaries[1]),
-                (self._boundaries[2], self._boundaries[3])) 
+                (self._boundaries[2], self._boundaries[3]))
+    
+    def __str__(self):
+        return self.__repr__()
+    
+    def __repr__(self):
+        return f"Rectangle(boundaries={self._boundaries})"

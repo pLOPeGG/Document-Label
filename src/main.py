@@ -32,7 +32,7 @@ class Window(tk.Tk, metaclass=Singleton):
 
         """
         super().__init__()
-        
+
         self._controller: control.Controller = control.Controller(self)
         self._build()
 
@@ -42,9 +42,9 @@ class Window(tk.Tk, metaclass=Singleton):
         """
         self.main_frame = tk.Frame(self)
         self.main_frame.pack(side=tk.TOP)
-        
+
         self.menu = menu.Menu(self)
-       
+
         # TOP Frame for navigation / buttons
         self.top_frame = tk.Frame(self.main_frame)
         self.top_frame.pack(side=tk.TOP)
@@ -57,7 +57,7 @@ class Window(tk.Tk, metaclass=Singleton):
         # Middle frame for canvas
         self.middle_frame = tk.Frame(self.main_frame)
         self.middle_frame.pack(side=tk.BOTTOM)
-        
+
         self.doc_canvas = canvas.DocumentCanvas(self.middle_frame,
                                                 height=1200,
                                                 width=900,
@@ -74,4 +74,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -26,9 +26,9 @@ class DocumentCanvas(tk.Canvas):
         self.root: main.Window = root
         self.config(bg='white')
         self.pack()
- 
+
         self._document: document.Document = None  # Current working document
-       
+
         # Stores last positions clicked
         self.position_buffer = []
         # Stores all selections validated
@@ -43,9 +43,9 @@ class DocumentCanvas(tk.Canvas):
 
         self.bind('<space>', self._validate_selection_f)
         self.bind('<Key>', self._key_pressed_f)
-        
+
         self.update()
-    
+
     def get_size(self):
         """Dynamic size of the widget
 
@@ -72,12 +72,12 @@ class DocumentCanvas(tk.Canvas):
         :image: Either PIL Image or path to image
         :returns: TODO
 
-        """       
+        """
         if not isinstance(doc, document.Document):
             raise TypeError
-         
+
         size = self.get_size()
-        doc.resize(size=size,  
+        doc.resize(size=size,
                    resample=pilimg.BILINEAR,  # Adequate for text upsampling according to https://graphicdesign.stackexchange.com/questions/26385/difference-between-none-linear-cubic-and-sinclanczos3-interpolation-in-image
                    )
         self._document = doc
@@ -135,10 +135,11 @@ class DocumentCanvas(tk.Canvas):
 
         """
         if len(self.position_buffer) > 0:
-            self._document.draw_rectangle(rectangle.Rectangle(*self.position_buffer[0], 
-                                                              *(event.x, event.y)))
+            self._document.draw_rectangle(
+                rectangle.Rectangle(*self.position_buffer[0],
+                                    *(event.x, event.y)))
             self.draw_document()
-    
+
     def _validate_selection_f(self, event: tk.Event):
         """Validate last selection
 
@@ -150,13 +151,13 @@ class DocumentCanvas(tk.Canvas):
             return
         self.selection_l.append(self.selection_to_validate)
         self.selection_to_validate = None
-        
+
         # Modify stored image
         self._document.save_modifications()
-        
+
         last_box = self._document._last_box
         control.Controller().push_box(last_box)
-        
+
     def _key_pressed_f(self, event: tk.Event):
         """TODO: Docstring for _key_pressed_f."""
         key = (event.keysym, event.keycode)
@@ -165,7 +166,7 @@ class DocumentCanvas(tk.Canvas):
             self._apply_shortcut_f(event)
         else:
             self._select_label_f(event)
-        
+
     def _apply_shortcut_f(self, event: tk.Event):
         """TODO: Docstring for _apply_shortcut_f."""
         control.Controller().apply_shortcut((event.keysym, event.keycode),

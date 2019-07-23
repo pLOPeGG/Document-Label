@@ -12,6 +12,7 @@ import tkinter as tk
 
 from src.controller import control
 
+
 class Menu(tk.Menu):
     def __init__(self, root, *args, **kwargs):
         super().__init__(bd=10, tearoff=0)

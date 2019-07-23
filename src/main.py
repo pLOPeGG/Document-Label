@@ -20,6 +20,7 @@ from src.view import canvas, menu
 from src.model import document
 from src.controller import control
 
+
 class Window(tk.Tk, metaclass=Singleton):
 
     """Main window starting application"""
@@ -32,7 +33,7 @@ class Window(tk.Tk, metaclass=Singleton):
         """
         super().__init__()
         
-        self._controller: control.Controller = control.Controller(self) 
+        self._controller: control.Controller = control.Controller(self)
         self._build()
 
     def _build(self):
@@ -49,8 +50,8 @@ class Window(tk.Tk, metaclass=Singleton):
         self.top_frame.pack(side=tk.TOP)
 
         self.next_button = tk.Button(self.top_frame,
-            text="Next",
-            )
+                                     text="Next",
+                                     )
         self.next_button.pack(side=tk.RIGHT)
 
         # Middle frame for canvas
@@ -58,9 +59,9 @@ class Window(tk.Tk, metaclass=Singleton):
         self.middle_frame.pack(side=tk.BOTTOM)
         
         self.doc_canvas = canvas.DocumentCanvas(self.middle_frame,
-                height=1200,
-                width=900,
-                )
+                                                height=1200,
+                                                width=900,
+                                                )
         self.doc_canvas.pack()
 
 

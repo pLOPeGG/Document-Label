@@ -8,6 +8,7 @@ Date:   2019-07-09
 mail:   douzont@gmail.com
 """
 
+
 class Singleton(type):
     __instances = {}
     

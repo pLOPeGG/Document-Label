@@ -8,9 +8,10 @@ Date:   2019-07-09
 mail:   douzont@gmail.com
 """
 from collections import deque
+from pathlib import Path
 from typing import Tuple, Deque
 import tkinter as tk
-from tkinter import colorchooser
+from tkinter import colorchooser, filedialog
 
 from src.my_util import Singleton
 from src.model import label, rectangle, document
@@ -39,6 +40,18 @@ class Controller(metaclass=Singleton):
             ('Right', 39): None,
             ('Down', 40): None
         }
+
+    def open_file(self):
+        file = filedialog.askopenfilename(initialdir=R"C:/",
+                                          title="Select file",
+                                          filetypes=(("jpeg files", "*.jpg"),
+                                                     ("png files", "*.png"),
+                                                     ("all files", "*")))
+        file_pa: Path = Path(file)
+        if file_pa.is_file():
+            self._window.load_document(file_pa)
+        else:
+            pass
 
     def apply_shortcut(self, key: Tuple[str, int], doc: document.Document):
         if key in self._shortcut_d:

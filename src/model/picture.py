@@ -26,7 +26,7 @@ class Picture:
     def _open(self):
         return pilimg.open(str(self._image_path), 'r').convert("RGBA")
     
-    def resize(self, 
+    def resize(self,
                size: Tuple[int, int],
                *args,
                **kwargs) -> pilimg.Image:

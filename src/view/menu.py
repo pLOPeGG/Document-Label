@@ -22,11 +22,16 @@ class Menu(tk.Menu):
 
         controller = control.Controller()
 
-        self.sub_menu = tk.Menu(self, tearoff=0)
-        self.add_cascade(label='label', menu=self.sub_menu)
-        self.sub_menu.add_command(label='add label',
-                                  command=controller.add_label)
-        self.sub_menu.add_command(label='remove label',
-                                  command=lambda: print('coucou2'))
-        self.sub_menu.add_command(label='show label list',
-                                  command=controller.show_label)
+        self.sub_menu_file = tk.Menu(self, tearoff=0)
+        self.add_cascade(label='file', menu=self.sub_menu_file)
+        self.sub_menu_file.add_command(label='open file',
+                                       command=controller.open_file)
+
+        self.sub_menu_label = tk.Menu(self, tearoff=0)
+        self.add_cascade(label='label', menu=self.sub_menu_label)
+        self.sub_menu_label.add_command(label='add label',
+                                        command=controller.add_label)
+        self.sub_menu_label.add_command(label='remove label',
+                                        command=lambda: print('coucou2'))
+        self.sub_menu_label.add_command(label='show label list',
+                                        command=controller.show_label)

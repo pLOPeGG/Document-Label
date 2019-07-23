@@ -64,11 +64,15 @@ class Window(tk.Tk, metaclass=Singleton):
                                                 )
         self.doc_canvas.pack()
 
+    def load_document(self, doc_pa: Path):
+        doc = document.Document(doc_pa)
+        self.doc_canvas.load_document(doc)
+
 
 def main():
     app = Window()
-    doc = document.Document(Path("img/sample_0.png"))
-    app.doc_canvas.load_document(doc)
+    doc_p = Path("img/sample_0.png")
+    app.load_document(doc_p)
     tk.mainloop()
 
 
